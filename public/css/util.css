@@ -1,0 +1,61 @@
+.content_modal{
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-content: center;
+	z-index: 100;
+}
+.content_aviso{
+	padding: 20px;
+	font-size: 20px;
+	font-weight: bold;
+	color: #ffffff;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 10px 0px #000;
+	-moz-box-shadow: 3px 3px 10px 0px #000;
+	box-shadow: 3px 3px 10px 0px #000;
+	cursor: default;
+	z-index: 100;
+}
+.aviso_laterial{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+.error{
+	background: #f44336;
+}
+.advertencia{
+	background: #ff9800;
+}
+.aviso{
+	background: #4CAF50;
+}
+.confirmacion{
+	background: #2196F3;
+}
+.content_btn{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	margin-top: 20px;
+}
+.content_btn .btn{
+	background: #ffffff;
+	border: none;
+	color: #000000;
+	font-size: 16px;
+	padding: 5px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.content_btn .btn:hover{
+	-webkit-box-shadow: 3px 3px 10px 0px #000;
+	-moz-box-shadow: 3px 3px 10px 0px #000;
+	box-shadow: 3px 3px 10px 0px #000;
+}
