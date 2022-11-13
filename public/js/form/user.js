@@ -48,7 +48,7 @@ form_register.addEventListener('submit',()=>{
 });
 
 form_login.addEventListener('submit',()=>{
-	event.preventDefault();
+	event.preventDefault()
 	fetch('user/login',{
 		method:"POST",
 		body:new URLSearchParams({
@@ -65,3 +65,16 @@ form_login.addEventListener('submit',()=>{
 		}
 	});
 });
+
+
+var socket;
+conectar();
+async function conectar(){
+	this.socket=await new WebSocket("ws://192.168.10.177:8000");
+	this.socket.onmessage=(event)=>{
+		alert("Mensaje recibido "+event.data);
+	}
+}
+function enviar(){
+	this.socket.send("Hola mundo");
+}

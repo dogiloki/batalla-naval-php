@@ -7,6 +7,10 @@ require "src/config.php";
 
 $router=new Router();
 
+$router->get('/test',function(){
+	include "src/server.php";
+});
+
 $router->get('/','Juego@inicio');
 
 // Usuario

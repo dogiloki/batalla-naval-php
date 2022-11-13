@@ -13,7 +13,7 @@ class Juego{
 
 	public function inicio(){
 		if($this->model_user->validadToken($_SESSION['token']??null)){
-			view('posicionamiento',['session'=>true]);
+			view('index',['session'=>true]);
 		}else{
 			view('index');
 		}
