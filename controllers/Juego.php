@@ -12,12 +12,19 @@ class Juego{
 	}
 
 	public function inicio(){
-		if($this->model_user->validadToken($_SESSION['token']??null)){
-			view('index',['session'=>true]);
+		$token=$_SESSION['token']??null;
+		if($this->model_user->validadToken($token)){
+			view('tablero',['session'=>true,'user'=>$this->model_user->getUser($token)]);
 		}else{
 			view('index');
 		}
-		
+	}
+
+	public function crear($request){
+		$params['json']=[
+			'status'=>$this->model->crear($request)
+		];
+		view('json',$params);
 	}
 
 }

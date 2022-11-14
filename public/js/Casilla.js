@@ -1,9 +1,7 @@
 class Casilla{
 
 	constructor(fila,columna){
-		let obj=document.createElement("img");
-		obj.classList.add("casilla");
-		this.obj=obj;
+		this.obj=null;
 		this.fila=fila;
 		this.columna=columna;
 		this.disparo=false;
@@ -12,15 +10,15 @@ class Casilla{
 	}
 
 	normal(){
-		this.obj.style.background=Config.colores.normal;
+		this.obj.style.background=Diccionario.colores.normal;
 	}
 
 	seleccionado(){
-		this.obj.style.background=Config.colores.seleccion;
+		this.obj.style.background=Diccionario.colores.seleccion;
 	}
 
 	ocupada(){
-		this.obj.style.background=Config.colores.ocupado;
+		this.obj.style.background=Diccionario.colores.ocupado;
 	}
 
 }

@@ -13,6 +13,12 @@
 		<div id="title">Batalla Naval</div>
 		<?php
 		if($session??false){
+			echo "
+			<div>
+				<input type='number' class='caja' id='caja-code' placeholder='Código'>
+				<button class='btn' id='btn-unirse'>Unirse</button>
+				<button class='btn' id='btn-crear'>Crear partida</button>
+			</div>";
 			echo "<button class='btn-nav' id='btn-cerrar-sesion'>Cerrar sesión</button>";
 		}
 		?>

@@ -17,8 +17,8 @@ $router->get('/','Juego@inicio');
 $router->post('/user/register','User@register');
 $router->post('/user/login','User@login');
 
-// Tablero
-$router->post('/tablero/agregar','Tablero@agregar');
+// Juego
+$router->post('/juego/crear','Juego@crear');
 
 $router->controller();
 

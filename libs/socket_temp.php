@@ -4,10 +4,21 @@ class Client{
 
 	public $socket;
 	public $handshake;
+	public $ip=null;
+	public $msg=null;
 
-	public function __construct($socket,$ip){
+	public function __construct($socket){
 		$this->socket=$socket;
-		$this->ip;
+		$this->ip=socket_getpeername($socket,$ip);
+		$this->ip=$ip;
+	}
+
+	public function msg($msg=null){
+		if($msg==null){
+			return $this->msg;
+		}else{
+			$this->msg=$msg;
+		}
 	}
 	
 }
@@ -53,10 +64,10 @@ class Socket{
 		ob_implicit_flush();// socket_strerror($this->socket);
 		$this->host=$host;
 		$this->port=$port;
-		$this->listen();
+		$this->create();
 	}
 
-	private function listen(){
+	private function create(){
 		if (($this->socket=socket_create(AF_INET,SOCK_STREAM,SOL_TCP))===false) {
 			echo "socket_create(): ".socket_strerror(socket_last_error())."\n";
 		}
@@ -69,55 +80,61 @@ class Socket{
 		if(socket_listen($this->socket,5)===false) {
 			echo "socket_listen(): ".socket_strerror(socket_last_error($this->socket))."\n";
 		}
-		$this->run();
 	}
 
-	private function run(){
+	public function listen($action_connected,$action_on,$action_disconnected){
+		echo "Servidor iniciado";
 		do{
-			$read=[];
-			$read[]=$this->socket;
-			$read=array_merge($read,$this->clients);
-			if(@socket_select($read,$null,$null,0,10) < 1){
+			$new_clients=[];
+			$new_clients[]=$this->socket;
+			$new_clients=array_merge($new_clients,$this->clients);
+			if((socket_select($new_clients,$null,$null,0,5))<1){
 				continue;
 			}
-			// Nuevas conexiones
-			if(in_array($this->socket,$read)){
-				if(($client=socket_accept($this->socket))===false){
-					echo "socket_accept(): ".socket_strerror(socket_last_error($this->socket))."\n";
-					break;
-				}
+			if(in_array($this->socket,$new_clients)){
+				$client=socket_accept($this->socket);
 				$this->clients[]=$client;
-				socket_set_block($client);
 				$header=socket_read($client,1024);
 				$this->handshake($header,$client,$this->host,$this->port);
-				socket_getpeername($client,$ip);
-				$key=array_keys($this->clients,$client);
-				$msg="ip: {$ip}";
-				$this->send($msg,$client);
-				// $index=array_search($this->socket,$read);
-				// unset($read[$index]);
+				$index=array_search($this->socket,$new_clients);
+				unset($new_clients[$index]);
+				$action_connected($this,$client);
 			}
-			// Entrada de datos
-			foreach($this->clients as $key=>$client){
-				if(in_array($client,$read)){
-					while(@socket_recv($client,$socket_data,1024,0)>=1){
-						if($socket_data){
-							$msg=$this->unseal($socket_data);
-							$this->send($msg);
-							print_r($this->clients);
-							break 2;
-						}
-					}
-					$socket_data=@socket_read($client,1024,PHP_NORMAL_READ);
-					if($socket_data===false) {
-						socket_getpeername($client,$ip);
-						$msg="Desconectado ip: {$ip}";
-						echo $msg."\n";
-						$index=array_search($client,$this->clients);
-						socket_close($this->clients[$index]);
-						unset($this->clients[$index]);
+			foreach($new_clients as $new_client){
+				while(socket_recv($new_client,$buf,1024,0)!==0){
+					if($buf){
+						$msg=$this->unseal($buf);
+						$action_on($this,$new_client,$msg);
+						break 2;
 					}
 				}
+				$buf=@socket_read($new_client,1024,PHP_NORMAL_READ);
+				if($buf===false){
+					// Cliente desconectado
+					$index=array_search($new_client,$this->clients);
+					unset($this->clients[$index]);
+					$action_disconnected($this,$new_client);
+					continue;
+				}
+				// $data=socket_recv($new_client,$buf,1024,0);
+				// if($data===false){
+				// 	// Cliente desconectado
+				// 	$index=array_search($new_client,$this->clients);
+				// 	unset($this->clients[$index]);
+				// 	$action_disconnected($this,$new_client);
+				// }else
+				// if($data===0){
+				// 	// Cliente desconectado
+				// 	$index=array_search($new_client,$this->clients);
+				// 	unset($this->clients[$index]);
+				// 	$action_disconnected($this,$new_client);
+				// }else{
+				// 	// Recibio datos del cliente
+				// 	if($buf){
+				// 		$msg=$this->unseal($buf);
+				// 		$action_on($this,$new_client,$msg);
+				// 	}
+				// }
 			}
 		}while(true);
 		socket_close($this->socket);

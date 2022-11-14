@@ -75,6 +75,26 @@ class User{
 		}
 	}
 
+	public function getUser($token){
+		if($token==null){
+			return null;
+		}
+		try{
+			$rs_token=DB::table('session')->select()->where('token',$token)->execute()->fetchAll();
+			if(sizeof($rs_token)<=0){
+				return null;
+			}
+			$id_user=$rs_token[0]['id_user'];
+			$rs_user=DB::table('user')->select()->where('id',$id_user??'')->execute()->fetchAll();
+			if(sizeof($rs_user)<=0){
+				return null;
+			}
+			return $rs_user;
+		}catch(\Exception $ex){
+			return null;
+		}
+	}
+
 }
 
 ?>

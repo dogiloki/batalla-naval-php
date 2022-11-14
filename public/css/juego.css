@@ -4,7 +4,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	position: absolute;
-	top: 0px;
+	top: 8vh;
 	left: 0px;
 	overflow-y: scroll;
 }
@@ -27,13 +27,12 @@
 	font-size: 16px;
 	margin: 0px 3vh 0px 3vh;
 }
-
 .content-tablero{
 	width: 90vw;
 	height: 80vh;
 	position: absolute;
 	left: 0px;
-	top: 10vh;
+	top: 18vh;
 }
 .content-tablero .casilla{
 	float: left;

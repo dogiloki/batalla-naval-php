@@ -1,11 +1,10 @@
 class Jugador{
 
-	constructor(nombre,img){
-		this.obj;
+	constructor(nombre,tablero){
+		this.obj=null;
 		this.nombre=nombre;
 		this.img=img;
-		this.turno=false;
-		this.tablero=new Tablero(Config.dimenciones.filas,Config.dimenciones.columnas);
+		this.tablero=tablero;
 	}
 
 }

@@ -1,14 +1,19 @@
 class Config{
 
 	static dimenciones={
-		filas:10,
-		columnas:15
+		filas:15,
+		columnas:20
 	};
 
-	static colores={
-		normal:"none",
-		seleccion:"#aaffa8",
-		ocupado:"#ff999a"
+	static num_jugadores=5;
+
+	static img={
+		players:[
+			"assets/players/player1.webp"
+		],
+		agua:"",
+		disparo:"",
+		barco_destruido:""
 	}
 
 }
