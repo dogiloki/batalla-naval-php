@@ -104,4 +104,21 @@ class Util{
 		}
 	}
 
+	static content_modal=null;
+
+	static carga(status,msg=""){
+		if(status){
+			Util.content_modal=document.createElement("section");
+			let content_modal=Util.content_modal;
+			let content_carga=document.createElement("div");
+			content_carga.innerHTML=msg;
+			content_carga.setAttribute("class","content_carga")
+			content_modal.setAttribute("class","content_modal");
+			content_modal.appendChild(content_carga);
+			document.body.appendChild(content_modal);
+		}else{
+			document.body.removeChild(Util.content_modal);
+		}
+	}
+
 }

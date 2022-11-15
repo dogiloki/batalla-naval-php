@@ -31,4 +31,11 @@
 <script type="text/javascript" src="public/js/Casilla.js"></script>
 <script type="text/javascript" src="public/js/Barco.js"></script>
 <script type="text/javascript" src="public/js/Juego.js"></script>
-<script type="text/javascript" src="public/js/App.js"></script>
+<?php
+if(($code??null)==null || ($token??null)==null){
+	?><script type="text/javascript" src="public/js/app_tablero.js"></script><?php
+}else{
+	?><script type="text/javascript" src="public/js/Socket.js"></script><?php
+	?><script type="text/javascript" src="public/js/app_juego.js"></script><?php
+}
+?>

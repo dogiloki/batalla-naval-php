@@ -1,6 +1,6 @@
 class Jugador{
 
-	constructor(nombre,tablero){
+	constructor(nombre,tablero,img=""){
 		this.obj=null;
 		this.nombre=nombre;
 		this.img=img;

@@ -37,10 +37,12 @@ DB::create()->table('session',function($table,$vars){
 DB::create()->table('game',function($table,$vars){
 	$table->add('code','varchar(10)')->primaryKey();
 	$table->add('turn','int');
-	$table->add('id_user1','int')->foreignKey('user','id');
-	$table->add('board1','text');
-	$table->add('id_user2','int')->nullable()->foreignKey('user','id');
-	$table->add('board2','text')->nullable();
+	$table->add('id_user_1','int')->foreignKey('user','id');
+	$table->add('token_1','varchar',64);
+	$table->add('board_1','text');
+	$table->add('id_user_2','int')->foreignKey('user','id')->nullable();
+	$table->add('token_2','varchar',64)->nullable();
+	$table->add('board_2','text')->nullable();
 	$table->add('date_register','datetime');
 	$table->add('date_expired','datetime');
 	$table->engine($vars[0]);

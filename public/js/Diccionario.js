@@ -30,7 +30,10 @@ class Diccionario{
 			total:0,
 			max:0,
 			nombre:"Destruir",
-			img:"public/assets/boats/destruido.png"
+			img:"public/assets/boats/destruido.png",
+			imgs:[
+				"public/assets/boats/destruido.png"
+			]
 		},
 		{
 			tipo:Diccionario.portaAviones,
@@ -38,7 +41,13 @@ class Diccionario{
 			total:0,
 			max:2,
 			nombre:"Porta Aviones",
-			img:"public/assets/boats/1.png"
+			img:"public/assets/boats/1.png",
+			imgs:[
+				"public/assets/boats/1.png",
+				"public/assets/boats/1.png",
+				"public/assets/boats/1.png",
+				"public/assets/boats/1.png"
+			]
 		},
 		{
 			tipo:Diccionario.submarino,
@@ -46,7 +55,12 @@ class Diccionario{
 			total:0,
 			max:3,
 			nombre:"Submarino",
-			img:"public/assets/boats/1.png"
+			img:"public/assets/boats/1.png",
+			imgs:[
+				"public/assets/boats/1.png",
+				"public/assets/boats/1.png",
+				"public/assets/boats/1.png"
+			]
 		},
 		{
 			tipo:Diccionario.destructor,
@@ -54,7 +68,11 @@ class Diccionario{
 			total:0,
 			max:3,
 			nombre:"Destructor",
-			img:"public/assets/boats/1.png"
+			img:"public/assets/boats/1.png",
+			imgs:[
+				"public/assets/boats/1.png",
+				"public/assets/boats/1.png"
+			]
 		},
 		{
 			tipo:Diccionario.fragata,
@@ -62,8 +80,29 @@ class Diccionario{
 			total:0,
 			max:4,
 			nombre:"Fragata",
-			img:"public/assets/boats/1.png"
+			img:"public/assets/boats/1.png",
+			imgs:[
+				"public/assets/boats/1.png"
+			]
 		}
 	];
 
+}
+
+// Precargar assets
+var image;
+preload();
+function preload(){
+	Util.carga(true,"Cargando assets...");
+	image=new Image();
+	image.src=Diccionario.disparo;
+	Diccionario.barcos.forEach((barco)=>{
+		image=new Image();
+		image.src=barco.img;
+		barco.imgs.forEach((img)=>{
+			image=new Image();
+			image.src=img;
+		});
+	});
+	Util.carga(false);
 }

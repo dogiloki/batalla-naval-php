@@ -29,6 +29,7 @@ btn_pag_login.addEventListener('click',()=>{
 
 form_register.addEventListener('submit',()=>{
 	event.preventDefault();
+	Util.carga(true,"Registrando cuenta...");
 	fetch('user/register',{
 		method:"POST",
 		body:new URLSearchParams({
@@ -44,11 +45,16 @@ form_register.addEventListener('submit',()=>{
 		}else{
 			location.reload();
 		}
+		Util.carga(false);
+	})
+	.catch((error)=>{
+		Util.carga(false);
 	});
 });
 
 form_login.addEventListener('submit',()=>{
-	event.preventDefault()
+	event.preventDefault();
+	Util.carga(true,"Iniciando sesión...");
 	fetch('user/login',{
 		method:"POST",
 		body:new URLSearchParams({
@@ -63,18 +69,9 @@ form_login.addEventListener('submit',()=>{
 		}else{
 			location.reload();
 		}
+		Util.carga(false);
+	})
+	.catch((error)=>{
+		Util.carga(false);
 	});
 });
-
-
-var socket;
-conectar();
-async function conectar(){
-	this.socket=await new WebSocket("ws://192.168.10.177:8000");
-	this.socket.onmessage=(event)=>{
-		alert("Mensaje recibido "+event.data);
-	}
-}
-function enviar(){
-	this.socket.send("Hola mundo");
-}

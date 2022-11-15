@@ -6,7 +6,6 @@ var content_tablero=document.getElementById('content-tablero');
 var btn_crear=document.getElementById('btn-crear');
 var juego=new Juego();
 var seleccion={
-	nombre:null,
 	tablero:new Tablero(),
 	casilla:{
 		fila:null,
@@ -25,10 +24,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 	this.juego.agregarBarco(Diccionario.submarino,2);
 	this.juego.agregarBarco(Diccionario.destructor,3);
 	this.juego.agregarBarco(Diccionario.fragata,1);
-	if(this.juego.iniciada){
-		this.tablero=juego.tablero.tablero;
-		construirTablero(this.tablero);
-	}else{
+	if(!this.juego.iniciada){
 		selectorBarcos();
 	}
 	mostrarTablero();
@@ -93,7 +89,6 @@ function selectorBarcos(){
 }*/
 
 function mostrarTablero(){
-	let nombre=this.seleccion.nombre;
 	let tablero=this.seleccion.tablero;
 	let ancho_total=this.content_tablero.offsetWidth;
 	let alto_total=this.content_tablero.offsetHeight;
@@ -113,26 +108,7 @@ function mostrarTablero(){
 			let alto_vh=(alto_px*80)/alto_total;
 			casilla.style.width=ancho_vw+"vw";
 			casilla.style.height=alto_vh+"vh";
-			if(this.juego.iniciada){
-				casilla.addEventListener("click",()=>{
-					let disparo=this.seleccion.tablero.disparar(a,b);
-					if(disparo==null){
-						Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
-					}else
-					if(disparo==false){
-						Util.aviso(Util.ADVERT,"Fallaste el disparo",Util.LATERAL);
-					}else{
-						if(disparo.undido()){
-							Util.aviso(Util.MSG,"Has undido un barco",Util.LATERAL);
-						}else{
-							Util.aviso(Util.MSG,"Le has diparado a un barco",Util.LATERAL);
-						}
-					}
-					if(!this.seleccion.tablero.hayBarcos()){
-						Util.aviso(Util.MSG,"Destruiste todos los barcos",Util.LATERAL);
-					}
-				});
-			}else{
+			if(!this.juego.iniciada){
 				casilla.addEventListener("mouseover",()=>{
 					if(this.seleccion.tablero.seleccion_barco!=null){
 						this.seleccion.casilla.fila=a;
@@ -180,30 +156,12 @@ function mostrarTablero(){
 	}
 }
 
-function construirTablero(tablero){
-	this.seleccion.tablero=new Tablero();
-	this.tablero.barcos.forEach((barco)=>{
-		this.seleccion.barco=new Barco(barco.tipo);
-		this.seleccion.tablero.seleccion_barco=this.seleccion.barco;
-		this.seleccion.casilla.fila=barco.centro.fila;
-		this.seleccion.casilla.columna=barco.centro.columna;
-		this.seleccion.tablero.seleccion_barco.estructurar(barco.centro.fila,barco.centro.columna);
-		this.seleccion.tablero.seleccionPrevia(false);
-		if(this.seleccion.tablero.seleccion_valida){
-			this.seleccion.tablero.ponerBarco(false);
-			this.seleccion.barco=null;
-			this.seleccion.tablero.seleccion_barco=this.seleccion.barco;
-		}else{
-			Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
-		}
-	});
-}
-
 function crear(){
 	if(this.seleccion.tablero.barcos.length!=this.juego.total_barcos){
 		Util.aviso(Util.ERROR,"Posicione todos los barcos",Util.LATERAL);
 		return;
 	}
+	Util.carga(true,"Creando partida...");
 	let tablero=JSON.stringify(this.seleccion.tablero);
 	fetch('juego/crear',{
 		method:'POST',
@@ -215,6 +173,12 @@ function crear(){
 	.then((data)=>{
 		if(data.status??false){
 			location.reload();
+		}else{
+			Util.aviso(Util.ERROR,"Error al crear partidad, intente más tarde",Util.LATERAL);
 		}
+		Util.carga(false);
+	})
+	.catch((error)=>{
+		Util.carga(false);	
 	});
 }

@@ -34,6 +34,7 @@ label{
 	cursor: pointer;
 	font-size: 16px;
 	transition: 0.2s all ease;
+	text-decoration: none;
 }
 .btn-form:hover,.btn-form2:hover{
 	transform: scale(1.02);

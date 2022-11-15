@@ -19,6 +19,7 @@ $router->post('/user/login','User@login');
 
 // Juego
 $router->post('/juego/crear','Juego@crear');
+$router->post('/juego/obtener','Juego@getGame');
 
 $router->controller();
 

@@ -29,25 +29,25 @@ class Barco{
 				this.coordenadas=[
 					{
 						"destruido":false,
-						"img":"assets/boats/1.png",
+						"img":Diccionario.barcos[tipo].imgs[0],
 						"fila":fila,
 						"columna":columna
 					},
 					{
 						"destruido":false,
-						"img":"assets/boats/2.png",
+						"img":Diccionario.barcos[tipo].imgs[1],
 						"fila":fila+1,
 						"columna":columna
 					},
 					{
 						"destruido":false,
-						"img":"assets/boats/3.png",
+						"img":Diccionario.barcos[tipo].imgs[2],
 						"fila":fila+2,
 						"columna":columna
 					},
 					{
 						"destruido":false,
-						"img":"assets/boats/4.png",
+						"img":Diccionario.barcos[tipo].imgs[3],
 						"fila":fila+3,
 						"columna":columna
 					}
@@ -57,19 +57,19 @@ class Barco{
 				this.coordenadas=[
 					{
 						"destruido":false,
-						"img":"assets/boats/1.png",
+						"img":Diccionario.barcos[tipo].imgs[0],
 						"fila":fila,
 						"columna":columna
 					},
 					{
 						"destruido":false,
-						"img":"assets/boats/2.png",
+						"img":Diccionario.barcos[tipo].imgs[1],
 						"fila":fila+1,
 						"columna":columna
 					},
 					{
 						"destruido":false,
-						"img":"assets/boats/3.png",
+						"img":Diccionario.barcos[tipo].imgs[2],
 						"fila":fila+1,
 						"columna":columna+1
 					}
@@ -79,13 +79,13 @@ class Barco{
 					this.coordenadas=[
 						{
 							"destruido":false,
-							"img":"assets/boats/1.png",
+							"img":Diccionario.barcos[tipo].imgs[0],
 							"fila":fila,
 							"columna":columna
 						},
 						{
 							"destruido":false,
-							"img":"assets/boats/2.png",
+							"img":Diccionario.barcos[tipo].imgs[1],
 							"fila":fila+1,
 							"columna":columna
 						}
@@ -95,7 +95,7 @@ class Barco{
 					this.coordenadas=[
 						{
 							"destruido":false,
-							"img":"assets/boats/1.png",
+							"img":Diccionario.barcos[tipo].imgs[0],
 							"fila":fila,
 							"columna":columna
 						}

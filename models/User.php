@@ -50,35 +50,37 @@ class User{
 			if(!Secure::verifyPassword($request->post('password'),$rs[0]['password']??"")){
 				return false;
 			}
-			$token=Secure::generateToken();
+			$session=Secure::generateToken();
 			$rs_token=DB::table('session')->insert([
 				"id_user"=>$rs[0]['id']??null,
-				"token"=>$token,
+				"token"=>$session,
 				"date_register"=>DB::flat('now()'),
 				"date_expired"=>DB::flat('now()')
 			])->execute();
-			return $_SESSION['token']=$token;
+			return $_SESSION['session']=$session;
 		}catch(\Exception $ex){
 			return false;
 		}
 	}
 
-	public function validadToken($token){
-		if($token==null){
+	public function validadSession($session){
+		if($session==null){
 			return false;
 		}
 		try{
-			$rs=DB::table('session')->select()->where('token',$token)->execute()->fetchAll();
+			$rs=DB::table('session')->select()->where('token',$session)->execute()->fetchAll();
 			return sizeof($rs)>=1;
 		}catch(\Exception $ex){
 			return false;
 		}
 	}
 
-	public static function getId(){
+	public static function getId($session=null){
 		try{
-			$token=$_SESSION['token']??null;
-			$rs=DB::table('session')->select()->where('token',$token)->execute()->fetchAll();
+			if($session==null){
+				$session=$_SESSION['session']??null;
+			}
+			$rs=DB::table('session')->select()->where('token',$session)->execute()->fetchAll();
 			if(sizeof($rs)<=0){
 				return null;
 			}
@@ -88,21 +90,16 @@ class User{
 		}
 	}
 
-	public function getUser($token){
-		if($token==null){
+	public static function getUser($id){
+		if($id==null){
 			return null;
 		}
 		try{
-			$rs_token=DB::table('session')->select()->where('token',$token)->execute()->fetchAll();
-			if(sizeof($rs_token)<=0){
-				return null;
-			}
-			$id_user=$rs_token[0]['id_user'];
-			$rs_user=DB::table('user')->select()->where('id',$id_user??'')->execute()->fetchAll();
+			$rs_user=DB::table('user')->select()->where('id',$id??'')->execute()->fetchAll();
 			if(sizeof($rs_user)<=0){
 				return null;
 			}
-			return $rs_user;
+			return $rs_user[0];
 		}catch(\Exception $ex){
 			return null;
 		}
