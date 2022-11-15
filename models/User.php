@@ -75,6 +75,19 @@ class User{
 		}
 	}
 
+	public static function getId(){
+		try{
+			$token=$_SESSION['token']??null;
+			$rs=DB::table('session')->select()->where('token',$token)->execute()->fetchAll();
+			if(sizeof($rs)<=0){
+				return null;
+			}
+			return $rs[0]['id_user']??null;
+		}catch(\Exception $ex){
+			return null;
+		}
+	}
+
 	public function getUser($token){
 		if($token==null){
 			return null;

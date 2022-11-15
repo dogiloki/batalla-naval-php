@@ -1,10 +1,12 @@
 class Juego{
 
 	constructor(){
+		this.code="";
 		this.jugadores=[];
 		this.turno=0;
 		this.barcos=[];
-		this.iniciada=false;
+		this.total_barcos=0;
+		this.iniciada=`<?php echo ($code??null!=null); ?>`;
 	}
 
 	agregarBarco(tipo_barco,max){
@@ -18,6 +20,7 @@ class Juego{
 			barco:null,
 			info:barco
 		});
+		this.total_barcos+=max;
 	}
 
 }
