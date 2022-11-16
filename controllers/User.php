@@ -34,6 +34,15 @@ class User{
 		view('json',$params);
 	}
 
+	public function cerrar(){
+		$status=$this->model->cerrarSession();
+		if($status){
+			unset($_SESSION['session']);
+		}
+		$params["json"]["status"]=$status;
+		view('json',$params);
+	}
+
 }
 
 ?>

@@ -5,6 +5,7 @@ class Casilla{
 		this.fila=fila;
 		this.columna=columna;
 		this.disparo=false;
+		this.blanco=false;
 		this.ocupado=false;
 		this.status="";
 	}

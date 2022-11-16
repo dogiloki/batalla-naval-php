@@ -1,6 +1,6 @@
 <?php
 
-require "../libs/socket_temp.php";
+require "../libs/socket.php";
 
 $host="localhost";
 $port=8000;
@@ -14,7 +14,7 @@ $socket->listen(
 	},
 	// Recibir mensaje de cualquier cliente
 	function($socket,$client,$msg){
-		$socket->send($msg);
+		$socket->send($msg,$client);
 	},
 	// Desconexión
 	function($socket,$client){

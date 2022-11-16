@@ -23,7 +23,6 @@ class Socket{
 		socket_set_option($this->server, SOL_SOCKET, SO_REUSEADDR, 1);
 		socket_bind($this->server, 0, $port);
 		socket_listen($this->server);
-		$this->run();
 
 	}
 
@@ -34,18 +33,20 @@ class Socket{
 	 * 
 	 * @return bool
 	 */
-	function send($message) {
+	public function send($message,$client_2=null){
+		$message=$this->seal($message);
 		
-		// Build json dengan seal.
-		$raw = $this->seal(json_encode([
-			'message'=> $message
-		]));
-		
-		foreach($this->clients as $client)
-		{
-			@socket_write($client, $raw, strlen($raw));
-		}
-		
+			foreach($this->clients as $client){
+				if($client_2==null){
+					@socket_write($client,$message,strlen($message));
+				}else{
+					@socket_getpeername($client,$ip1);
+					@socket_getpeername($client_2,$ip2);
+					if($ip1!=$ip2){
+						@socket_write($client,$message,strlen($message));
+					}
+				}
+			}
 		return true;
 	}
 
@@ -143,84 +144,39 @@ class Socket{
 	 * 
 	 * @return void
 	 */
-	public function run() {
-
-		// Masukan koneksi server kedalam clients.
-		$this->clients = [
+	public function listen($action_connected,$action_on,$action_disconnected){
+		$this->clients=[
 			$this->server
 		];
-
-		// Set address and port.
-		$address = $this->address;
-		$port = $this->port;
-		
-		// Log message
-		echo "Listening incoming request on port {$this->port} ..\n";
-
-		// Unlimited loop.
-		while (true) 
-		{
-			$newClients = $this->clients;
-			
-			socket_select($newClients, $null, $null, 0, 10);
-			
-			// Jika koneksi socket sekarang ada dalam clients.
-			if (in_array($this->server, $newClients)) 
-			{
-				// Terima koneksi baru ..
-				$newSocket = socket_accept($this->server);
-				
-				// Masukan dalam client/container socket.
-				$this->clients[] = $newSocket;
-				
-				// Baca data masuk dari tunnel socket yang masuk tadi, browser biasanya mengirim header.
-				$header = socket_read($newSocket, 1024);
-				
-				// Handshake, kirim balik data balasan.
-				$this->handshake($header, $newSocket, $address, $port);
-				
-				// Beri pesan, ada client baru bergabung, ke semua connected client.
-				socket_getpeername($newSocket, $ip);
-				$this->send("Client dengan ip {$ip} baru saja bergabung");
-				
-				echo "Client dengan ip {$ip} baru saja bergabung \n";
-				
-				$index = array_search($this->server, $newClients);
+		echo "Servidor a activo ".$this->port."\n";
+		while(true){
+			$newClients=$this->clients;
+			socket_select($newClients, $null,$null,0,10);
+			if(in_array($this->server,$newClients)){
+				$newSocket=socket_accept($this->server);
+				$this->clients[]=$newSocket;
+				$header=socket_read($newSocket,1024);
+				$this->handshake($header,$newSocket,$this->address,$this->port);
+				$index=array_search($this->server, $newClients);
 				unset($newClients[$index]);
+				$action_connected($this,$newSocket);
 			}
-			
-			foreach ($newClients as $newClientsResource) 
-			{	
-				// Selama unlimited loop, terima data kiriman dari client, dari method "websocket.send" pada browser.
-				while(socket_recv($newClientsResource, $socketData, 1024, 0) >= 1)
-				{
-					// Jika ada data diterima, baru proses
-					if ($socketData) {
-						
-						// Terima data dari client, kemudian unseal dan decode json.
-						$socketMessage = $this->unseal($socketData);
-						$this->send($socketMessage);
-                        print_r($this->clients);
-						
+			foreach($newClients as $newClientsResource){	
+				while(socket_recv($newClientsResource,$socketData,1024,0)>=1){
+					if ($socketData){
+						$socketMessage=$this->unseal($socketData);
+						$action_on($this,$newClientsResource,$socketMessage);
 						break 2;
 					}
 				}
-				
-				// Dalam looping juga selalu cek, client ada yang keluar apa engga. 
-				// Caranya baca dari socket read berdasarkan connected client, kalau keluar kasih pesan out.
-				$socketData = @socket_read($newClientsResource, 1024, PHP_NORMAL_READ);
-				// False berarti keluar tunnel.
-				if ($socketData === false) 
-				{
-					socket_getpeername($newClientsResource, $ip);
-
-					echo "Desconectado: {$ip}\n";
-					$index = array_search($newClientsResource, $this->clients);
-					unset($this->clients[$index]);	
+				$socketData=@socket_read($newClientsResource, 1024, PHP_NORMAL_READ);
+				if($socketData===false){
+					$index=array_search($newClientsResource, $this->clients);
+					unset($this->clients[$index]);
+					$action_disconnected($this,$newClientsResource);
 				}
 			}
 		}
-
 		socket_close($this->server);
 	}
 }

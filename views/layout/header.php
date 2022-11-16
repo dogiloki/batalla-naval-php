@@ -6,6 +6,7 @@
 	<title>Batalla Naval</title>
 	<link rel="stylesheet" type="text/css" href="public/css/util.css">
 	<link rel="stylesheet" type="text/css" href="public/css/header.css">
+	<link rel="stylesheet" type="text/css" href="public/css/form.css">
 </head>
 <body>
 
@@ -20,8 +21,13 @@
 					<button class='btn' id='btn-unirse'>Unirse</button>
 					<button class='btn' id='btn-crear'>Crear partida</button>
 				</div>";
+			}else{
+				echo "
+				<div class='text' id='text'></div>
+				<button class='btn-nav' id='btn-salir'>Abandonar partida</button>
+				";
 			}
-			echo "<a href='close' class='btn-nav' id='btn-cerrar-sesion'>Cerrar sesión</a>";
+			echo "<button class='btn-nav' id='btn-cerrar-sesion'>Cerrar sesión</button>";
 		}
 		?>
 	</header>

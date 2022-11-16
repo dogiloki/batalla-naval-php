@@ -4,6 +4,7 @@ var content_jugadores=document.getElementById('content-jugadores');
 var content_barcos=document.getElementById('content-barcos');
 var content_tablero=document.getElementById('content-tablero');
 var btn_crear=document.getElementById('btn-crear');
+var btn_unirse=document.getElementById('btn-unirse');
 var juego=new Juego();
 var seleccion={
 	tablero:new Tablero(),
@@ -48,6 +49,10 @@ document.addEventListener("keydown",(evt)=>{
 
 btn_crear.addEventListener("click",()=>{
 	this.crear();
+});
+
+btn_unirse.addEventListener("click",()=>{
+	this.unirse();
 });
 
 function selectorBarcos(){
@@ -179,6 +184,42 @@ function crear(){
 		Util.carga(false);
 	})
 	.catch((error)=>{
+		Util.aviso(Util.ERROR,"Error al crear partidad, intente más tarde",Util.LATERAL);
 		Util.carga(false);	
 	});
+}
+
+async function unirse(){
+	let socket=await new Socket();
+	let code=(document.getElementById('caja-code').value??"").replaceAll(" ","");
+	if(this.seleccion.tablero.barcos.length!=this.juego.total_barcos){
+		Util.aviso(Util.ERROR,"Posicione todos los barcos",Util.LATERAL);
+		return;
+	}else
+	if(code==""){
+		Util.aviso(Util.ERROR,"Ingrese un código",Util.LATERAL);	
+		return;
+	}
+	Util.carga(true,"Uniendose a la partida...");
+	let tablero=JSON.stringify(this.seleccion.tablero);
+	fetch('juego/unirse',{
+		method:'POST',
+		body: new URLSearchParams({
+			'board':tablero,
+			'code':code
+		})
+	})
+	.then(rs=>rs.json())
+	.then((data)=>{
+		if(data.status??false){
+			socket.enviar({
+				"code":data.code,
+				"status":"unirse"
+			});
+			location.reload();
+		}else{
+			Util.aviso(Util.ERROR,"Error al unirse a la partidad, intente más tarde",Util.LATERAL);
+		}
+		Util.carga(false);
+	})
 }

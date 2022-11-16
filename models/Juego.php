@@ -43,6 +43,31 @@ class Juego{
 		}
 	}
 
+	public function unirse($request){
+		try{
+			$id_user=User::getId();
+			$token=Secure::generateToken(32);
+			$code=$request->post('code');
+			$rs=DB::table('game')->select()
+			->where('code',$code)
+			->execute()->fetchAll();
+			if(sizeof($rs)<=0){
+				return false;
+			}
+			$rs_game=DB::execute("UPDATE game SET id_user_2='".$id_user."', token_2='".$token."', board_2='".$request->post('board')."' WHERE code='".$code."'");
+			if($rs_game!=null){
+				$_SESSION['code']=$code;
+				$_SESSION['token']=$token;
+			}
+			return [
+				"status"=>$rs_game!=null,
+				"code"=>$code
+			];
+		}catch(\Exception $ex){
+			return false;
+		}
+	}
+
 	public function getGame($code){
 		try{
 			$rs=DB::table('game')->select()
@@ -78,7 +103,8 @@ class Juego{
 		try{
 			$rs=DB::table('game')->select()
 			->where('code',$code)->and()
-			->where('token_1',$token)
+			->where('token_1',$token)->or()
+			->where('token_2',$token)
 			->execute()->fetchAll();
 			return sizeof($rs)>=1;
 		}catch(\Exception $ex){

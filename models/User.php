@@ -105,6 +105,18 @@ class User{
 		}
 	}
 
+	public function cerrarSession(){
+		try{
+			$id_user=User::getId();
+			$session=$_SESSION['session']??null;
+			$params=[$id_user,$session];
+			$rs=DB::execute("DELETE FROM session WHERE id_user=? AND token=?",$params);
+			return $rs!=null;
+		}catch(\Exception $ex){
+			return false;
+		}
+	}
+
 }
 
 ?>

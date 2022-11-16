@@ -83,60 +83,38 @@ class Socket{
 	}
 
 	public function listen($action_connected,$action_on,$action_disconnected){
-		echo "Servidor iniciado";
-		do{
-			$new_clients=[];
-			$new_clients[]=$this->socket;
-			$new_clients=array_merge($new_clients,$this->clients);
-			if((socket_select($new_clients,$null,$null,0,5))<1){
-				continue;
-			}
-			if(in_array($this->socket,$new_clients)){
-				$client=socket_accept($this->socket);
-				$this->clients[]=$client;
-				$header=socket_read($client,1024);
+		$this->clients=[
+			$this->socket
+		];
+		echo "Servidor a activo ".$this->port."\n";
+		while(true){
+			$newClients=$this->clients;
+			socket_select($newClients, $null,$null,0,10);
+			if(in_array($this->socket,$newClients)){
+				$newSocket=socket_accept($this->socket);
+				$this->clients[]=$newSocket;
+				$header=socket_read($newSocket,1024);
 				$this->handshake($header,$client,$this->host,$this->port);
-				$index=array_search($this->socket,$new_clients);
-				unset($new_clients[$index]);
-				$action_connected($this,$client);
+				$index=array_search($this->socket, $newClients);
+				unset($newClients[$index]);
+				$action_connected($this,$newSocket);
 			}
-			foreach($new_clients as $new_client){
-				while(socket_recv($new_client,$buf,1024,0)!==0){
-					if($buf){
-						$msg=$this->unseal($buf);
-						$action_on($this,$new_client,$msg);
+			foreach($newClients as $newClientsResource){	
+				while(socket_recv($newClientsResource,$socketData,1024,0)>=1){
+					if ($socketData){
+						$socketMessage=$this->unseal($socketData);
+						$action_on($this,$newClientsResource,$socketMessage);
 						break 2;
 					}
 				}
-				$buf=@socket_read($new_client,1024,PHP_NORMAL_READ);
-				if($buf===false){
-					// Cliente desconectado
-					$index=array_search($new_client,$this->clients);
+				$socketData=@socket_read($newClientsResource, 1024, PHP_NORMAL_READ);
+				if($socketData===false){
+					$index=array_search($newClientsResource, $this->clients);
 					unset($this->clients[$index]);
-					$action_disconnected($this,$new_client);
-					continue;
+					$action_disconnected($this,$newClientsResource);
 				}
-				// $data=socket_recv($new_client,$buf,1024,0);
-				// if($data===false){
-				// 	// Cliente desconectado
-				// 	$index=array_search($new_client,$this->clients);
-				// 	unset($this->clients[$index]);
-				// 	$action_disconnected($this,$new_client);
-				// }else
-				// if($data===0){
-				// 	// Cliente desconectado
-				// 	$index=array_search($new_client,$this->clients);
-				// 	unset($this->clients[$index]);
-				// 	$action_disconnected($this,$new_client);
-				// }else{
-				// 	// Recibio datos del cliente
-				// 	if($buf){
-				// 		$msg=$this->unseal($buf);
-				// 		$action_on($this,$new_client,$msg);
-				// 	}
-				// }
 			}
-		}while(true);
+		}
 		socket_close($this->socket);
 
 

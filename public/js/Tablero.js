@@ -111,6 +111,7 @@ class Tablero{
 				barco.coordenadas.forEach((coord)=>{
 					if(coord.fila==fila && coord.columna==columna){
 						coord.destruido=true;
+						this.casillas[fila][columna].blanco=true;
 						this.casillas[coord.fila][coord.columna].obj.src=Diccionario.barcos.filter((bar)=>{return bar.tipo==Diccionario.destruido})[0].img;
 						throw barco;
 					}

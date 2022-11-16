@@ -42,9 +42,15 @@ class Juego{
 
 	public function crear($request){
 		$rs=$this->model->crear($request);
-		if($rs['status']??false){
-			$_SESSION['code']=$rs['code'];
-		}
+		$params['json']=[
+			'status'=>$rs['status']??false,
+			'code'=>$rs['code']??''
+		];
+		view('json',$params);
+	}
+
+	public function unirse($request){
+		$rs=$this->model->unirse($request);
 		$params['json']=[
 			'status'=>$rs['status']??false,
 			'code'=>$rs['code']??''
@@ -66,16 +72,26 @@ class Juego{
 			unset($_SESSION['session']);
 			$session=null;
 		}
+		$id_user=$this->model_user::getId();
 		$rs=$this->model->getGame($code);
 		$params['json']=[
 			'session'=>$session!=null,
 			'status'=>$rs!=null,
+			'code'=>$rs['code'],
 			'turn'=>$rs['turn'],
+			'name'=>$this->model_user::getUser($id_user)['user'],
 			'name_1'=>$this->model_user::getUser($rs['id_user_1'])['user'],
 			'name_2'=>$this->model_user::getUser($rs['id_user_2'])['user']??null,
 			'board_1'=>$rs['board_1'],
 			'board_2'=>$rs['board_2']??null
 		];
+		view('json',$params);
+	}
+
+	public function salir(){
+		unset($_SESSION['code']);
+		unset($_SESSION['token']);
+		$params['json']=['status'=>true];
 		view('json',$params);
 	}
 

@@ -7,6 +7,8 @@ class Juego{
 		this.barcos=[];
 		this.total_barcos=0;
 		this.iniciada=iniciada;
+		this.code=null;
+		this.name=null;
 	}
 
 	agregarBarco(tipo_barco,max){
@@ -27,12 +29,16 @@ class Juego{
 		this.jugadores.push(jugador);
 	}
 
-	cambioTurno(){
+	cambiarTurno(){
 		this.turno=this.turno==0?1:0;
 	}
 
-	obtenerTablero(){
-		return jugadores[this.turno==0?1:0];
+	obtenerOponente(){
+		return this.jugadores[this.turno==0?1:0];
+	}
+
+	obtenerJugador(){
+		return this.jugadores[this.turno];
 	}
 
 }

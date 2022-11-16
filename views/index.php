@@ -1,5 +1,4 @@
 <?php include "layout/header.php"; ?>
-<link rel="stylesheet" type="text/css" href="public/css/form.css">
 <main class="content-form">
 	<form id="form-register" method="POST" style="display: none;">
 		<fieldset>
@@ -42,4 +41,3 @@
 	<!--<button onclick="enviar()">sa</button>-->
 </main>
 <?php include "layout/footer.php"; ?>
-<script type="text/javascript" src="<?php echo config('public').'js/form/user.js' ?>"></script>
