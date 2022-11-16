@@ -36,6 +36,7 @@ class Juego{
 			];
 			view('tablero',$params);
 		}else{
+			unset($_SESSION['session']);
 			view('index');
 		}
 	}
@@ -92,6 +93,35 @@ class Juego{
 		unset($_SESSION['code']);
 		unset($_SESSION['token']);
 		$params['json']=['status'=>true];
+		view('json',$params);
+	}
+
+	public function updateGame($request){
+		$session=$_SESSION['session']??null;
+		$code=$_SESSION['code']??null;
+		$token=$_SESSION['token']??null;
+		$status=true;
+		if(!$this->model->validadCode($code)){
+			unset($_SESSION['token']);
+			unset($_SESSION['code']);
+			$status=false;
+		}else
+		if(!$this->model->validadToken($code,$token)){
+			unset($_SESSION['token']);
+			unset($_SESSION['code']);
+			$status=false;
+		}
+		if(!$this->model_user->validadSession($session)){
+			unset($_SESSION['session']);
+			$status=false;
+		}
+		$rs=null;
+		if($status){
+			$rs=$this->model->updateGame($request);
+		}
+		$params['json']=[
+			'status'=>$rs!=null
+		];
 		view('json',$params);
 	}
 

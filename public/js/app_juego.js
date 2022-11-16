@@ -146,13 +146,7 @@ function mostrarTablero(){
 				// Disparo
 				casilla.addEventListener("click",()=>{
 					if(this.seleccion.jugador.nombre==this.juego.name){
-						this.socket.enviar({
-							"code":this.juego.code,
-							"status":"disparo",
-							"fila":a,
-							"columna":b
-						});
-						this.disparar(a,b);
+						this.disparar(a,b,true);
 					}
 				});
 			}
@@ -177,12 +171,25 @@ function mostrarTablero(){
 	}
 }
 
-function disparar(fila,columna){
+function disparar(fila,columna,enviar_socket=false){
 	let disparo=this.seleccion.tablero.disparar(fila,columna);
 	if(disparo==null){
 		Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
-		return
+		return;
 	}
+	if(enviar_socket){
+		this.socket.enviar({
+			"code":this.juego.code,
+			"status":"disparo",
+			"fila":fila,
+			"columna":columna
+		});
+	}
+	if(!this.seleccion.tablero.hayBarcos()){
+		Util.aviso(Util.MSG,"Destruiste todos los barcos",Util.LATERAL);
+		Util.aviso(Util.MSG,"El ganador es: "+this.seleccion.jugador.nombre);
+		return;
+	}else
 	if(disparo==false){
 		Util.aviso(Util.ERROR,"Fallaste el disparo",Util.LATERAL);
 	}else{
@@ -192,13 +199,28 @@ function disparar(fila,columna){
 			Util.aviso(Util.ADVERT,"Le has diparado a un barco",Util.LATERAL);
 		}
 	}
-	if(!this.seleccion.tablero.hayBarcos()){
-		Util.aviso(Util.MSG,"Destruiste todos los barcos",Util.LATERAL);
-	}
 	this.juego.cambiarTurno();
 	this.seleccion.jugador=this.juego.obtenerJugador();
 	this.seleccion.oponente=this.juego.obtenerOponente();
 	this.seleccion.tablero=this.seleccion.oponente.tablero;
 	text.innerHTML=this.seleccion.jugador.nombre+" ataca a "+this.seleccion.oponente.nombre;
 	this.mostrarTablero();
+	fetch("juego/actualizar",{
+		method:"POST",
+		body:new URLSearchParams({
+			"turn":this.juego.turno,
+			"code":this.juego.code,
+			"board_1":JSON.stringify(this.juego.jugadores[0].tablero),
+			"board_2":JSON.stringify(this.juego.jugadores[1].tablero)
+		})
+	})
+	.then(rs=>rs.json())
+	.then((data)=>{
+		if(!(data.status??false)){
+			//location.reload();
+		}
+	})
+	.catch((error)=>{
+		//location.reload();
+	})
 }

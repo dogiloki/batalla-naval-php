@@ -22,6 +22,7 @@ $router->post('/user/cerrar','User@cerrar');
 $router->post('/juego/crear','Juego@crear');
 $router->post('/juego/unirse','Juego@unirse');
 $router->post('/juego/obtener','Juego@getGame');
+$router->post('/juego/actualizar','Juego@updateGame');
 $router->post('/juego/salir','Juego@salir');
 $router->post('/juego/code',function(){
 	view('json',[

@@ -112,6 +112,23 @@ class Juego{
 		}
 	}
 
+	public function updateGame($request){
+		try{
+			$params=[
+				$request->post('turn'),
+				$request->post('board_1'),
+				$request->post('board_2'),
+				$request->post('code')
+			];
+			var_dump($params);
+			$rs=DB::execute("UPDATE game SET turn=?, board_1=?, board_2=? WHERE code=?",$params);
+			return $rs;
+		}catch(\Exception $ex){
+			echo $ex->getMessage();
+			return false;
+		}
+	}
+
 }
 
 ?>

@@ -16,7 +16,7 @@
 		if($session??false){
 			if(($code??null)==null || ($token??null)==null){
 				echo "
-				<div>
+				<div style='display: flex'>
 					<input type='number' class='caja' id='caja-code' placeholder='Código'>
 					<button class='btn' id='btn-unirse'>Unirse</button>
 					<button class='btn' id='btn-crear'>Crear partida</button>
