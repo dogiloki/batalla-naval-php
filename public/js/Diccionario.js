@@ -1,6 +1,6 @@
 class Diccionario{
 
-	static disparo="public/assets/boats/agua.png";
+	static disparo="public/assets/agua.jpg";
 	static destruido=0;
 	static portaAviones=1;
 	static submarino=2;
@@ -30,9 +30,9 @@ class Diccionario{
 			total:0,
 			max:0,
 			nombre:"Destruir",
-			img:"public/assets/boats/destruido.png",
+			img:"public/assets/boats/destruido.jpg",
 			imgs:[
-				"public/assets/boats/destruido.png"
+				"public/assets/boats/destruido.jpg"
 			]
 		},
 		{
