@@ -1,6 +1,7 @@
 var content_tablero=document.getElementById('content-tablero');
 var btn_salir=document.getElementById('btn-salir');
 var text=document.getElementById('text');
+var content_misil=document.getElementById('content-misil');
 var socket;
 var juego=new Juego(true);
 var seleccion={
@@ -15,6 +16,9 @@ var seleccion={
 };
 
 document.addEventListener('DOMContentLoaded',async()=>{
+	content_misil.src=Diccionario.misil;
+	content_misil.style.left="0px";
+	content_misil.style.top="-100px";
 	this.socket=new Socket();
 	this.socket.server.onmessage=function(event){
 		fetch('juego/code',{
@@ -37,7 +41,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
 			}
 			case 'disparo':{
 				if((data.fila??null)!=null && (data.columna??null)!=null){
-					disparar(data.fila,data.columna);
+					moverMisil(data.x,data.y);
+					disparar(data.x,data.y,data.fila,data.columna);
 				}
 				break;
 			}
@@ -49,6 +54,37 @@ document.addEventListener('DOMContentLoaded',async()=>{
 btn_salir.addEventListener("click",()=>{
 	this.abandonar();
 });
+
+function moverMisil(x,y){
+	content_misil.style.translate=x+"px "+y+"px";
+	setTimeout(()=>{
+		content_misil.style.translate="0px 0px";
+	},2000);
+	//x=x-25;
+	//y=y-50;
+	/*Util.modal(content_misil,true);
+	let mover_x=0;
+	let mover_y=0;
+	let tiempo=1500;
+	let total=0;
+	let intervalo;
+	content_misil.style.left="0px";
+	content_misil.style.top="0px";
+	intervalo=setInterval(()=>{
+		if(mover_x>x && mover_y>y){
+			Util.modal(content_misil,false);
+			content_misil.style.left="0px";
+			content_misil.style.top="0px";
+			clearInterval(intervalo);
+		}
+		content_misil.style.left=mover_x+"px";
+		content_misil.style.top=mover_y+"px";
+		mover_x+=(x/10);
+		mover_y+=(y/10);
+		total+=tiempo;
+	},100);*/
+	return;
+}
 
 function abandonar(){
 	Util.carga(true,"Abandonando partida");
@@ -144,9 +180,10 @@ function mostrarTablero(){
 			casilla.style.height=alto_vh+"vh";
 			if(this.juego.iniciada){
 				// Disparo
-				casilla.addEventListener("click",()=>{
+				casilla.addEventListener("click",(event)=>{
 					if(this.seleccion.jugador.nombre==this.juego.name){
-						this.disparar(a,b,true);
+						this.moverMisil(casilla.offsetLeft,casilla.offsetTop);
+						this.disparar(casilla.offsetLeft,casilla.offsetTop,a,b,true);
 					}
 				});
 			}
@@ -171,7 +208,7 @@ function mostrarTablero(){
 	}
 }
 
-function disparar(fila,columna,enviar_socket=false){
+async function disparar(x,y,fila,columna,enviar_socket=false){
 	let disparo=this.seleccion.tablero.disparar(fila,columna);
 	if(disparo==null){
 		Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
@@ -180,6 +217,8 @@ function disparar(fila,columna,enviar_socket=false){
 	if(enviar_socket){
 		this.socket.enviar({
 			"code":this.juego.code,
+			"x":x,
+			"y":y,
 			"status":"disparo",
 			"fila":fila,
 			"columna":columna
@@ -199,28 +238,30 @@ function disparar(fila,columna,enviar_socket=false){
 			Util.aviso(Util.ADVERT,"Le has diparado a un barco",Util.LATERAL);
 		}
 	}
-	this.juego.cambiarTurno();
-	this.seleccion.jugador=this.juego.obtenerJugador();
-	this.seleccion.oponente=this.juego.obtenerOponente();
-	this.seleccion.tablero=this.seleccion.oponente.tablero;
-	text.innerHTML=this.seleccion.jugador.nombre+" ataca a "+this.seleccion.oponente.nombre;
-	this.mostrarTablero();
-	fetch("juego/actualizar",{
-		method:"POST",
-		body:new URLSearchParams({
-			"turn":this.juego.turno,
-			"code":this.juego.code,
-			"board_1":JSON.stringify(this.juego.jugadores[0].tablero),
-			"board_2":JSON.stringify(this.juego.jugadores[1].tablero)
+	setTimeout(()=>{
+		this.juego.cambiarTurno();
+		this.seleccion.jugador=this.juego.obtenerJugador();
+		this.seleccion.oponente=this.juego.obtenerOponente();
+		this.seleccion.tablero=this.seleccion.oponente.tablero;
+		text.innerHTML=this.seleccion.jugador.nombre+" ataca a "+this.seleccion.oponente.nombre;
+		this.mostrarTablero();
+		fetch("juego/actualizar",{
+			method:"POST",
+			body:new URLSearchParams({
+				"turn":this.juego.turno,
+				"code":this.juego.code,
+				"board_1":JSON.stringify(this.juego.jugadores[0].tablero),
+				"board_2":JSON.stringify(this.juego.jugadores[1].tablero)
+			})
 		})
-	})
-	.then(rs=>rs.json())
-	.then((data)=>{
-		if(!(data.status??false)){
+		.then(rs=>rs.json())
+		.then((data)=>{
+			if(!(data.status??false)){
+				//location.reload();
+			}
+		})
+		.catch((error)=>{
 			//location.reload();
-		}
-	})
-	.catch((error)=>{
-		//location.reload();
-	})
+		});
+	},2000);
 }

@@ -17,7 +17,7 @@
 			if(($code??null)==null || ($token??null)==null){
 				echo "
 				<div style='display: flex'>
-					<input type='number' class='caja' id='caja-code' placeholder='Código'>
+					<input type='text' class='caja' id='caja-code' placeholder='Código'>
 					<button class='btn' id='btn-unirse'>Unirse</button>
 					<button class='btn' id='btn-crear'>Crear partida</button>
 				</div>";

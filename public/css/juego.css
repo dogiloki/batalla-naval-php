@@ -43,6 +43,14 @@
 .content-tablero img{
 	cursor: pointer;
 }
+.misil{
+	position: absolute;
+	width: 25px;
+	height: 50px;
+	transform: rotateZ(155deg);
+	transition: 1.5s all ease;
+	z-index: 10;
+}
 .caja{
 	color: #ffffff;
 	font-weight: bold;

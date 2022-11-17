@@ -8,13 +8,13 @@ $config=Config::singleton();
 if(true){
 	$config->set('db_host','localhost');
 	$config->set('db_user','root');
-	$config->set('db_password','');
+	$config->set('db_password','Hola123');
 	$config->set('db_name','batalla_naval');
 }else{
-	$config->set('db_host','');
-	$config->set('db_user','');
-	$config->set('db_password','');
-	$config->set('db_name','');
+	$config->set('db_host','172.26.8.58');
+	$config->set('db_user','root');
+	$config->set('db_password','phg8VokGRoco');
+	$config->set('db_name','batalla_naval');
 }
 
 // Encabezado

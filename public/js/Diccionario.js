@@ -1,6 +1,7 @@
 class Diccionario{
 
 	static disparo="public/assets/agua.jpg";
+	static misil="public/assets/misil.png";
 	static destruido=0;
 	static portaAviones=1;
 	static submarino=2;

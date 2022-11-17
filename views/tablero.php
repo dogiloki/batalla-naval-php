@@ -22,6 +22,8 @@
 <section class="content-tablero" id="content-tablero"></section>
 <section class="content-juego"></section>
 
+<img class="misil" id="content-misil">
+
 <?php require "layout/footer.php"; ?>
 
 <script type="text/javascript" src="public/js/Diccionario.js"></script>
