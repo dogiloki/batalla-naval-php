@@ -17,8 +17,9 @@ var seleccion={
 
 document.addEventListener('DOMContentLoaded',async()=>{
 	content_misil.src=Diccionario.misil;
+	Util.modal(content_misil,false);
 	content_misil.style.left="0px";
-	content_misil.style.top="-100px";
+	content_misil.style.top="0px";
 	this.socket=new Socket();
 	this.socket.server.onmessage=function(event){
 		fetch('juego/code',{
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
 			}
 			case 'disparo':{
 				if((data.fila??null)!=null && (data.columna??null)!=null){
-					moverMisil(data.x,data.y);
+					this.moverMisil(this.seleccion.tablero.casillas[fila][columna].obj.offsetLeft,this.seleccion.tablero.casillas[fila][columna].obj.offsetTop+this.seleccion.tablero.casillas[fila][columna].obj.offsetParent.offsetTop);
 					disparar(data.x,data.y,data.fila,data.columna);
 				}
 				break;
@@ -56,9 +57,13 @@ btn_salir.addEventListener("click",()=>{
 });
 
 function moverMisil(x,y){
-	content_misil.style.translate=x+"px "+y+"px";
+	Util.modal(content_misil,true);
+	content_misil.style.left=(x-content_misil.offsetWidth/2)+"px";
+	content_misil.style.top=(y-content_misil.offsetHeight/2)+"px";
 	setTimeout(()=>{
-		content_misil.style.translate="0px 0px";
+		content_misil.style.left="0px";
+		content_misil.style.top="0px";
+		Util.modal(content_misil,false);
 	},2000);
 	//x=x-25;
 	//y=y-50;
@@ -182,7 +187,7 @@ function mostrarTablero(){
 				// Disparo
 				casilla.addEventListener("click",(event)=>{
 					if(this.seleccion.jugador.nombre==this.juego.name){
-						this.moverMisil(casilla.offsetLeft,casilla.offsetTop);
+						this.moverMisil(this.seleccion.tablero.casillas[a][b].obj.offsetLeft,this.seleccion.tablero.casillas[a][b].obj.offsetTop+this.seleccion.tablero.casillas[a][b].obj.offsetParent.offsetTop);
 						this.disparar(casilla.offsetLeft,casilla.offsetTop,a,b,true);
 					}
 				});
@@ -217,8 +222,6 @@ async function disparar(x,y,fila,columna,enviar_socket=false){
 	if(enviar_socket){
 		this.socket.enviar({
 			"code":this.juego.code,
-			"x":x,
-			"y":y,
 			"status":"disparo",
 			"fila":fila,
 			"columna":columna
