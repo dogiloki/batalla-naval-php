@@ -1,8 +1,8 @@
 class Config{
 
 	static dimenciones={
-		filas:15,
-		columnas:20
+		filas:10,
+		columnas:15
 	};
 
 	static num_jugadores=5;

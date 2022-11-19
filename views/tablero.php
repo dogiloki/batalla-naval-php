@@ -22,7 +22,7 @@
 <section class="content-tablero" id="content-tablero"></section>
 <section class="content-juego"></section>
 
-<img class="misil" id="content-misil">
+<img class="misil" id="content-misil" style="display: none">
 
 <?php require "layout/footer.php"; ?>
 

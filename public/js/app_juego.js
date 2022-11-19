@@ -27,27 +27,33 @@ document.addEventListener('DOMContentLoaded',async()=>{
 		})
 		.then(rs=>rs.json())
 		.then((data)=>{
-			if((data.code??"")!=JSON.parse(event.data).code){
-				return false;
+			let json=JSON.parse(event.data);
+			if((data.code??"")!=(json.code??null)){
+				Util.carga(true,"Error en servidor <button class='btn-nav' onclick='location.reload()' style='color:#353535'>Reintentar</button><br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
+				return;
+			}
+			switch(json.status??null){
+				case 'unirse':{
+					location.reload();
+					break;
+				}
+				case 'disparo':{
+					if((json.fila??null)!=null || (json.columna??null)!=null){
+						let fila=Number(json.fila);
+						let columna=Number(json.columna);
+						let x=Number(seleccion.tablero.casillas[fila][columna].obj.offsetLeft);
+						let y=Number(seleccion.tablero.casillas[fila][columna].obj.offsetTop)+Number(seleccion.tablero.casillas[fila][columna].obj.offsetParent.offsetTop);
+						disparar(x,y,fila,columna,false);
+					}
+					break;
+				}
 			}
 		})
 		.catch((error)=>{
-			return false;
-		})
-		let data=JSON.parse(event.data);
-		switch(data.status??null){
-			case 'unirse':{
-				location.reload();
-				break;
-			}
-			case 'disparo':{
-				if((data.fila??null)!=null && (data.columna??null)!=null){
-					disparar(this.seleccion.tablero.casillas[fila][columna].obj.offsetLeft,this.seleccion.tablero.casillas[fila][columna].obj.offsetTop+this.seleccion.tablero.casillas[fila][columna].obj.offsetParent.offsetTop,data.fila,data.columna);
-				}
-				break;
-			}
-		}
+			Util.carga(true,"Error en servidor <button class='btn-nav' onclick='location.reload()' style='color:#353535'>Reintentar</button><br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
+		});
 	}
+	Util.carga(true,"Esperando jugador...<br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
 	this.getTablero();
 });
 
@@ -67,30 +73,6 @@ function moverMisil(x,y){
 			resolve('resolved');
 		},1500);
 	});
-	//x=x-25;
-	//y=y-50;
-	/*Util.modal(content_misil,true);
-	let mover_x=0;
-	let mover_y=0;
-	let tiempo=1500;
-	let total=0;
-	let intervalo;
-	content_misil.style.left="0px";
-	content_misil.style.top="0px";
-	intervalo=setInterval(()=>{
-		if(mover_x>x && mover_y>y){
-			Util.modal(content_misil,false);
-			content_misil.style.left="0px";
-			content_misil.style.top="0px";
-			clearInterval(intervalo);
-		}
-		content_misil.style.left=mover_x+"px";
-		content_misil.style.top=mover_y+"px";
-		mover_x+=(x/10);
-		mover_y+=(y/10);
-		total+=tiempo;
-	},100);*/
-	return;
 }
 
 function abandonar(){
@@ -106,12 +88,11 @@ function abandonar(){
 		Util.carga(false);
 	}))
 	.catch((error)=>{
-		Util.carga(false);
+		Util.carga(true,"Error en servidor <button class='btn-nav' onclick='location.reload()' style='color:#353535'>Reintentar</button><br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
 	});
 }
 
 function getTablero(){
-	Util.carga(true,"Esperando jugador...<br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
 	fetch('juego/obtener',{
 		method:'POST',
 	})
@@ -141,7 +122,7 @@ function getTablero(){
 		Util.carga(false);
 	})
 	.catch((error)=>{
-		Util.carga(false);
+		Util.carga(true,"Error en servidor <button class='btn-nav' onclick='location.reload()' style='color:#353535'>Reintentar</button><br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
 	});
 }
 
@@ -216,9 +197,7 @@ function mostrarTablero(){
 }
 
 async function disparar(x,y,fila,columna,enviar_socket=false){
-	await this.moverMisil(x,y);
-	let disparo=this.seleccion.tablero.disparar(fila,columna);
-	if(disparo==null){
+	if(this.seleccion.tablero.casillas[fila][columna].disparo){
 		Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
 		return;
 	}
@@ -230,18 +209,41 @@ async function disparar(x,y,fila,columna,enviar_socket=false){
 			"columna":columna
 		});
 	}
+	await this.moverMisil(x,y);
+	let disparo=this.seleccion.tablero.disparar(fila,columna);
+	// Subir cambios del tablero al servidor
+	fetch("juego/actualizar",{
+		method:"POST",
+		body:new URLSearchParams({
+			"turn":this.juego.turno,
+			"code":this.juego.code,
+			"board_1":JSON.stringify(this.juego.jugadores[0].tablero),
+			"board_2":JSON.stringify(this.juego.jugadores[1].tablero)
+		})
+	})
+	.then(rs=>rs.json())
+	.then((data)=>{
+		if(!(data.status??false)){
+			Util.carga(true,"Error en servidor <button class='btn-nav' onclick='location.reload()' style='color:#353535'>Reintentar</button><br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
+		}
+	})
+	.catch((error)=>{
+		Util.carga(true,"Error en servidor <button class='btn-nav' onclick='location.reload()' style='color:#353535'>Reintentar</button><br><button class='btn-nav' onclick='abandonar()' style='color:#353535'>Abandonar partida</button>");
+	});
 	if(!this.seleccion.tablero.hayBarcos()){
-		Util.aviso(Util.MSG,"Destruiste todos los barcos",Util.LATERAL);
+		Util.aviso(Util.MSG,(enviar_socket)?"Destruiste todos los barcos":"Te destruyeron todos los barcos",Util.LATERAL);
 		Util.aviso(Util.MSG,"El ganador es: "+this.seleccion.jugador.nombre);
 		return;
 	}else
 	if(disparo==false){
-		Util.aviso(Util.ERROR,"Fallaste el disparo",Util.LATERAL);
+		if(enviar_socket){
+			Util.aviso(Util.ERROR,"Fallaste el disparo",Util.LATERAL);
+		}
 	}else{
 		if(disparo.undido()){
-			Util.aviso(Util.MSG,"Has undido un barco",Util.LATERAL);
+			Util.aviso(Util.MSG,(enviar_socket)?"Has undido un barco":"Te undieron un barco",Util.LATERAL);
 		}else{
-			Util.aviso(Util.ADVERT,"Le has diparado a un barco",Util.LATERAL);
+			Util.aviso(Util.ADVERT,(enviar_socket)?"Infringiste daña a un barco":"Recibiste daño en un barco",Util.LATERAL);
 		}
 	}
 	setTimeout(()=>{
@@ -251,23 +253,5 @@ async function disparar(x,y,fila,columna,enviar_socket=false){
 		this.seleccion.tablero=this.seleccion.oponente.tablero;
 		text.innerHTML=this.seleccion.jugador.nombre+" ataca a "+this.seleccion.oponente.nombre;
 		this.mostrarTablero();
-		fetch("juego/actualizar",{
-			method:"POST",
-			body:new URLSearchParams({
-				"turn":this.juego.turno,
-				"code":this.juego.code,
-				"board_1":JSON.stringify(this.juego.jugadores[0].tablero),
-				"board_2":JSON.stringify(this.juego.jugadores[1].tablero)
-			})
-		})
-		.then(rs=>rs.json())
-		.then((data)=>{
-			if(!(data.status??false)){
-				//location.reload();
-			}
-		})
-		.catch((error)=>{
-			//location.reload();
-		});
 	},2000);
 }

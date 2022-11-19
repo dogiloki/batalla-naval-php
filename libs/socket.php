@@ -148,7 +148,7 @@ class Socket{
 		$this->clients=[
 			$this->server
 		];
-		echo "Servidor a activo ".$this->port."\n";
+		echo "Servidor a activo ".$this->address.":".$this->port."\n";
 		while(true){
 			$newClients=$this->clients;
 			socket_select($newClients, $null,$null,0,10);

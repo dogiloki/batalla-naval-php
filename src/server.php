@@ -1,6 +1,6 @@
 <?php
 
-require "../libs/socket.php";
+require "libs/socket.php";
 
 $host="localhost";
 $port=8000;

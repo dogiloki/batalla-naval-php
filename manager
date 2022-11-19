@@ -24,6 +24,10 @@ switch($command){
 		}
 		break;
 	}
+	case 'server':{
+		require_once "src/server.php";
+		break;
+	}
 	case null: Raau::msg("Se requieren parámetros"); break;
 	default: Raau::msg("No existe el parámetro ".$command); break;
 }

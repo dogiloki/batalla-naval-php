@@ -1,6 +1,6 @@
 class Socket{
 
-	host="192.168.119.123";
+	host="192.168.10.177";
 	port="8000";
 
 	constructor(){

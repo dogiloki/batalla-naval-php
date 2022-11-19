@@ -120,7 +120,6 @@ class Juego{
 				$request->post('board_2'),
 				$request->post('code')
 			];
-			var_dump($params);
 			$rs=DB::execute("UPDATE game SET turn=?, board_1=?, board_2=? WHERE code=?",$params);
 			return $rs;
 		}catch(\Exception $ex){
