@@ -42,8 +42,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
 			}
 			case 'disparo':{
 				if((data.fila??null)!=null && (data.columna??null)!=null){
-					this.moverMisil(this.seleccion.tablero.casillas[fila][columna].obj.offsetLeft,this.seleccion.tablero.casillas[fila][columna].obj.offsetTop+this.seleccion.tablero.casillas[fila][columna].obj.offsetParent.offsetTop);
-					disparar(data.x,data.y,data.fila,data.columna);
+					disparar(this.seleccion.tablero.casillas[fila][columna].obj.offsetLeft,this.seleccion.tablero.casillas[fila][columna].obj.offsetTop+this.seleccion.tablero.casillas[fila][columna].obj.offsetParent.offsetTop,data.fila,data.columna);
 				}
 				break;
 			}
@@ -60,11 +59,14 @@ function moverMisil(x,y){
 	Util.modal(content_misil,true);
 	content_misil.style.left=(x-content_misil.offsetWidth/2)+"px";
 	content_misil.style.top=(y-content_misil.offsetHeight/2)+"px";
-	setTimeout(()=>{
-		content_misil.style.left="0px";
-		content_misil.style.top="0px";
-		Util.modal(content_misil,false);
-	},2000);
+	return new Promise(resolve=>{
+		setTimeout(()=>{
+			content_misil.style.left="0px";
+			content_misil.style.top="0px";
+			Util.modal(content_misil,false);
+			resolve('resolved');
+		},1500);
+	});
 	//x=x-25;
 	//y=y-50;
 	/*Util.modal(content_misil,true);
@@ -147,6 +149,7 @@ function construirTablero(tablero){
 	this.seleccion.tablero=new Tablero();
 	tablero.barcos.forEach((barco)=>{
 		this.seleccion.barco=new Barco(barco.tipo);
+		this.seleccion.barco.rotacion=barco.rotacion;
 		this.seleccion.tablero.seleccion_barco=this.seleccion.barco;
 		this.seleccion.casilla.fila=barco.centro.fila;
 		this.seleccion.casilla.columna=barco.centro.columna;
@@ -187,8 +190,7 @@ function mostrarTablero(){
 				// Disparo
 				casilla.addEventListener("click",(event)=>{
 					if(this.seleccion.jugador.nombre==this.juego.name){
-						this.moverMisil(this.seleccion.tablero.casillas[a][b].obj.offsetLeft,this.seleccion.tablero.casillas[a][b].obj.offsetTop+this.seleccion.tablero.casillas[a][b].obj.offsetParent.offsetTop);
-						this.disparar(casilla.offsetLeft,casilla.offsetTop,a,b,true);
+						this.disparar(this.seleccion.tablero.casillas[a][b].obj.offsetLeft,this.seleccion.tablero.casillas[a][b].obj.offsetTop+this.seleccion.tablero.casillas[a][b].obj.offsetParent.offsetTop,a,b,true);
 					}
 				});
 			}
@@ -214,6 +216,7 @@ function mostrarTablero(){
 }
 
 async function disparar(x,y,fila,columna,enviar_socket=false){
+	await this.moverMisil(x,y);
 	let disparo=this.seleccion.tablero.disparar(fila,columna);
 	if(disparo==null){
 		Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
