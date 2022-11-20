@@ -14,6 +14,7 @@ var seleccion={
 	},
 	barco:null
 };
+var disparando=false;
 
 document.addEventListener('DOMContentLoaded',async()=>{
 	content_misil.src=Diccionario.misil;
@@ -197,10 +198,14 @@ function mostrarTablero(){
 }
 
 async function disparar(x,y,fila,columna,enviar_socket=false){
+	if(this.disparando){
+		return;
+	}
 	if(this.seleccion.tablero.casillas[fila][columna].disparo){
 		Util.aviso(Util.ERROR,"Posición no válida",Util.LATERAL);
 		return;
 	}
+	this.disparando=true;
 	if(enviar_socket){
 		this.socket.enviar({
 			"code":this.juego.code,
@@ -253,5 +258,6 @@ async function disparar(x,y,fila,columna,enviar_socket=false){
 		this.seleccion.tablero=this.seleccion.oponente.tablero;
 		text.innerHTML=this.seleccion.jugador.nombre+" ataca a "+this.seleccion.oponente.nombre;
 		this.mostrarTablero();
+		this.disparando=false;
 	},2000);
 }
